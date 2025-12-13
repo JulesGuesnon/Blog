@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$defs": {
+    "TimeZone": {
+      "type": "string",
+      "description": "a string to be decoded into a TimeZone"
+    }
+  },
+  "type": "object",
+  "required": [
+    "$schema",
+    "source",
+    "time"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "type",
+        "baseFolder"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "fs"
+          ]
+        },
+        "baseFolder": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "time": {
+      "type": "object",
+      "required": [
+        "timezone"
+      ],
+      "properties": {
+        "timezone": {
+          "$ref": "#/$defs/TimeZone"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

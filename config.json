@@ -1,0 +1,10 @@
+{
+  "$schema": "./config.schema.json",
+  "time": {
+    "timezone": "Asia/Tokyo"
+  },
+  "source": {
+    "type": "fs",
+    "baseFolder": "./src/content"
+  }
+}

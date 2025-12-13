@@ -1,0 +1,147 @@
+@import "@fontsource-variable/bodoni-moda";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/m-plus-1";
+@import "@fontsource-variable/fira-code";
+
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+:root {
+  --fontsource-font-display: block;
+  --scrollbar-width: 12px;
+
+  /* Codeblock Light theme (Latte) */
+  --syntax-base: #eff1f5;
+  --syntax-text: #4c4f69;
+  --syntax-overlay2: #7c7f93;
+  --syntax-mauve: #8839ef;
+  --syntax-red: #d20f39;
+  --syntax-yellow: #df8e1d;
+  --syntax-blue: #1e66f5;
+  --syntax-peach: #fe640b;
+  --syntax-green: #40a02b;
+  --syntax-pink: #ea76cb;
+  --syntax-sky: #04a5e5;
+  --syntax-teal: #179299;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Codeblock Dark theme (Mocha) */
+    --syntax-base: #1e1e2e;
+    --syntax-text: #cdd6f4;
+    --syntax-overlay2: #9399b2;
+    --syntax-mauve: #cba6f7;
+    --syntax-red: #f38ba8;
+    --syntax-yellow: #f9e2af;
+    --syntax-blue: #89b4fa;
+    --syntax-peach: #fab387;
+    --syntax-green: #a6e3a1;
+    --syntax-pink: #f5c2e7;
+    --syntax-sky: #89dceb;
+    --syntax-teal: #94e2d5;
+  }
+}
+
+@theme {
+  --color-bg-light: #ffffff;
+  --color-bg-dark: #050505;
+  --font-mono:
+    "Fira Code Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+/* track (gutter background) */
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+
+/* thumb */
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-zinc-800);
+  border-radius: 8px;
+  border: 1px solid var(--color-zinc-700);
+}
+
+/* hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-zinc-700);
+}
+
+@keyframes detect-scroll {
+  from,
+  to {
+    --can-scroll: ;
+  }
+}
+
+body {
+  font-family: "Inter Variable";
+  line-height: 1.75;
+  font-size: 1rem;
+
+  transition: opacity 200ms ease;
+}
+
+html {
+  animation: detect-scroll linear;
+  animation-timeline: scroll(self);
+
+  --padding-if-can-scroll: var(--can-scroll) 0px;
+  --padding-if-cant-scroll: var(--scrollbar-width);
+  padding-right: var(--padding-if-can-scroll, var(--padding-if-cant-scroll));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Bodoni Moda Variable", "M PLUS 1 Variable";
+  font-weight: 600;
+}
+
+.marquee {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+
+.marquee-track {
+  display: inline-flex;
+  width: max-content;
+  animation: marquee 6s linear infinite;
+  padding-right: 2rem;
+}
+
+.marquee-track-container:hover .marquee-track {
+  animation-play-state: paused;
+  opacity: 0.9;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .marquee .marquee-track {
+    animation: none;
+  }
+}
