@@ -15,11 +15,7 @@ export const fromConfig = (v: Config.Source) => {
 
 export const getDefault = pipe(
 	Config.Config,
-	Effect.andThen((config) =>
-		Effect.gen(function* () {
-			return yield* Source;
-		}).pipe(Effect.provide(fromConfig(config.source))),
-	),
+	Effect.andThen((config) => getFromConfig(config)),
 );
 
 export const getFromConfig = (config: Config.Config) =>

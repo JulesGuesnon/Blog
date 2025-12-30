@@ -24,45 +24,44 @@ export const Slug = S.Lowercase.pipe(
 
 export type Slug = typeof Slug.Type;
 
+export const CreatedAt = S.transformOrFail(S.String, S.DateTimeZonedFromSelf, {
+	strict: true,
+	decode: (input, _opt, ast) =>
+		Effect.gen(function* () {
+			const config = yield* Config;
+
+			const defaultTimezone = config.time.timezone;
+
+			const timeZone = DateTime.makeZonedFromString(input).pipe(
+				Option.map((v) => v.zone),
+				Option.getOrElse(() => defaultTimezone),
+			);
+
+			const timeZoneStr = DateTime.zoneToString(timeZone);
+
+			return yield* DateTime.makeZoned(input.replace(`[${timeZoneStr}]`, ""), {
+				adjustForTimeZone: true,
+				timeZone,
+			}).pipe(
+				Option.match({
+					onNone: () =>
+						ParseResult.fail(
+							new ParseResult.Type(
+								ast,
+								input,
+								"Failed to convert input to a timed date",
+							),
+						),
+					onSome: (zoned) => ParseResult.succeed(zoned),
+				}),
+			);
+		}),
+	encode: (input) => ParseResult.succeed(DateTime.formatIsoZoned(input)),
+});
+
 export const Metadata = S.Struct({
 	title: S.String,
-	createdAt: S.transformOrFail(S.String, S.DateTimeZonedFromSelf, {
-		strict: true,
-		decode: (input, _opt, ast) =>
-			Effect.gen(function* () {
-				const config = yield* Config;
-
-				const defaultTimezone = config.time.timezone;
-
-				const timeZone = DateTime.makeZonedFromString(input).pipe(
-					Option.map((v) => v.zone),
-					Option.getOrElse(() => defaultTimezone),
-				);
-
-				const timeZoneStr = DateTime.zoneToString(timeZone);
-
-				return yield* DateTime.makeZoned(
-					input.replace(`[${timeZoneStr}]`, ""),
-					{
-						adjustForTimeZone: true,
-						timeZone,
-					},
-				).pipe(
-					Option.match({
-						onNone: () =>
-							ParseResult.fail(
-								new ParseResult.Type(
-									ast,
-									input,
-									"Failed to convert input to a timed date",
-								),
-							),
-						onSome: (zoned) => ParseResult.succeed(zoned),
-					}),
-				);
-			}),
-		encode: (input) => ParseResult.succeed(DateTime.formatIsoZoned(input)),
-	}),
+	createdAt: CreatedAt,
 	timeToRead: S.Duration,
 });
 
@@ -87,7 +86,6 @@ type SerializedMetadata = {
 type SerializedContent = {
 	slug: Slug;
 	metadata: SerializedMetadata;
-	rendered: string;
 };
 
 export type Content = typeof Content.Type;
@@ -104,15 +102,11 @@ export const serializeMetadata = (metadata: Metadata): SerializedMetadata => {
 	};
 };
 
-export const serialize = (
-	content: Content,
-	rendered: string,
-): SerializedContent => {
+export const serialize = (content: Content): SerializedContent => {
 	const { render: _, ...rest } = content;
 
 	return {
 		...rest,
 		metadata: serializeMetadata(content.metadata),
-		rendered,
 	};
 };

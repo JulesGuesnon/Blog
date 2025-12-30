@@ -35,4 +35,4 @@ export const evaluate = (str: string) =>
 				type: "mdx",
 				reason: e instanceof global.Error ? e.toString() : JSON.stringify(e),
 			}),
-	}).pipe(Effect.andThen(S.decode(EvaluateOutput)));
+	}).pipe(Effect.andThen(S.decode(EvaluateOutput, { errors: "all" })));

@@ -8,7 +8,7 @@ export const getTimeToRead = (content: string) => {
 	return Duration.minutes(Math.ceil(wordCount / AVG_WPM));
 };
 
-const CUSTOM_ID_RE = /\[\[\s*#([^\]]+?)\s*\]\]/u;
+export const CUSTOM_ID_RE = /\[\[\s*#([^\]]+?)\s*\]\]/u;
 
 export interface HeadingIdResult {
 	id: string;
@@ -39,3 +39,5 @@ export function extractHeadingId(rawText: string): HeadingIdResult {
 		cleanText: rawText,
 	};
 }
+
+export const cleanIdSyntax = (str: string) => str.replace(CUSTOM_ID_RE, "");

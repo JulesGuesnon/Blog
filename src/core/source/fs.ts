@@ -1,5 +1,5 @@
 import { FileSystem } from "@effect/platform";
-import { Effect, Layer } from "effect";
+import { Data, Effect, Layer } from "effect";
 import type * as Config from "@/core/config";
 import * as Error from "@/core/errors";
 import * as RawContent from "@/core/raw-content";
@@ -18,7 +18,7 @@ const scopedReadFile = (
 
 type CommonInput = { baseFolder: string };
 
-const get = Effect.cachedFunction(
+const cachedGet = Effect.cachedFunction(
 	({ baseFolder, slug }: { slug: Slug } & CommonInput) =>
 		Effect.gen(function* () {
 			const fs = yield* FileSystem.FileSystem;
@@ -41,9 +41,9 @@ const get = Effect.cachedFunction(
 
 			return { type, data, slug };
 		}),
-).pipe(Effect.runSync);
+);
 
-const all = Effect.cachedFunction(({ baseFolder }: CommonInput) =>
+const cachedAll = Effect.cachedFunction(({ baseFolder }: CommonInput) =>
 	Effect.gen(function* () {
 		const fs = yield* FileSystem.FileSystem;
 
@@ -73,7 +73,7 @@ const all = Effect.cachedFunction(({ baseFolder }: CommonInput) =>
 
 		return successes;
 	}),
-).pipe(Effect.runSync);
+);
 
 export const makeFsSource = ({ baseFolder }: Config.FsSource) =>
 	Layer.effect(
@@ -81,13 +81,16 @@ export const makeFsSource = ({ baseFolder }: Config.FsSource) =>
 		Effect.gen(function* () {
 			const fs = yield* FileSystem.FileSystem;
 
+			const get = yield* cachedGet;
+			const all = yield* cachedAll;
+
 			return {
 				get: (slug) =>
-					get({ baseFolder, slug }).pipe(
+					get(Data.struct({ baseFolder, slug })).pipe(
 						Effect.provideService(FileSystem.FileSystem, fs),
 					),
 				all: () =>
-					all({ baseFolder }).pipe(
+					all(Data.struct({ baseFolder })).pipe(
 						Effect.provideService(FileSystem.FileSystem, fs),
 					),
 			};

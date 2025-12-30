@@ -49,7 +49,7 @@ export const deserialize = (config: Serialized): Config => {
 				Brand.Brand<"Folder">,
 		},
 		time: {
-			...config,
+			...config.time,
 			timezone: Option.getOrThrow(
 				DateTime.zoneFromString(config.time.timezone),
 			),
