@@ -15,6 +15,12 @@ describe("Core > Content", () => {
 
 			expect(Either.isLeft(output)).toBeTruthy();
 		});
+
+		it("should fail the validation - fs traversal", () => {
+			const output = Schema.decodeEither(Content.Slug)("../../.env");
+
+			expect(Either.isLeft(output)).toBeTruthy();
+		});
 	});
 
 	describe("CreatedAt", () => {
@@ -68,7 +74,7 @@ describe("Core > Content", () => {
 				metadata: {
 					title: metadata.title,
 					timeToRead: 1,
-					createdAt: new Date("2025-12-12T21:00:00.000Z"),
+					createdAt: new Date("2025-12-12T12:00:00.000Z"),
 				},
 			});
 		});

@@ -3,33 +3,28 @@ import { createServerFn } from "@tanstack/react-start";
 import { Effect, pipe } from "effect";
 import { Link } from "@/components/Link";
 import { ServerError } from "@/components/ServerError";
-import { Content, Processor, Server, Source } from "@/core";
+import * as Content from "@/core/content";
+import * as Processor from "@/core/processor";
+import * as Server from "@/core/server";
+import * as Source from "@/core/source";
 
-const getAllContent = createServerFn({ method: "GET" }).handler(() =>
-	pipe(
-		Source.getDefault,
-		Effect.andThen((source) => source.all()),
-		Effect.andThen((contents) =>
-			Effect.forEach(
-				contents,
-				(content) =>
-					Processor.process(content).pipe(
-						Effect.map(({ metadata }) => {
-							const serialized = Content.serializeMetadata(metadata);
-
-							return {
-								...serialized,
-								title: Processor.extractHeadingId(serialized.title).cleanText,
-							};
-						}),
-					),
-				{ concurrency: "unbounded" },
-			),
+export const effect = pipe(
+	Source.getDefault,
+	Effect.andThen((source) => source.all()),
+	Effect.andThen((contents) =>
+		Effect.forEach(
+			contents,
+			(content) =>
+				Processor.process(content).pipe(
+					Effect.map(({ metadata }) => Content.serializeMetadata(metadata)),
+				),
+			{ concurrency: "unbounded" },
 		),
-		(e) => e,
-		Server.provideServerFn,
-		Server.runServerFn,
 	),
+);
+
+export const loadData = createServerFn({ method: "GET" }).handler(() =>
+	pipe(effect, Server.provideServerFn, Server.runServerFn),
 );
 
 export const Route = createFileRoute("/blog/")({
@@ -41,9 +36,7 @@ export const Route = createFileRoute("/blog/")({
 			},
 		],
 	}),
-	loader: () => {
-		return getAllContent();
-	},
+	loader: () => loadData(),
 });
 
 const formatter = new Intl.DateTimeFormat("ja", {

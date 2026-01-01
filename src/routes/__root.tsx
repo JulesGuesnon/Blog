@@ -76,15 +76,3 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		</html>
 	);
 }
-
-// <TanStackDevtools
-// 	config={{
-// 		position: "top-left",
-// 	}}
-// 	plugins={[
-// 		{
-// 			name: "Tanstack Router",
-// 			render: <TanStackRouterDevtoolsPanel />,
-// 		},
-// 	]}
-// />

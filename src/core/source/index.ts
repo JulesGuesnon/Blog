@@ -1,5 +1,5 @@
 import { Effect, pipe } from "effect";
-import * as Config from "../config/index.ts";
+import * as Config from "../config";
 import { Source } from "./context";
 import { makeFsSource } from "./fs";
 

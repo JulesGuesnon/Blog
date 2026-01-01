@@ -17,6 +17,9 @@ export const Slug = S.Lowercase.pipe(
 	S.filter((v) => {
 		if (v.includes(" ")) return "A slug cannot contain spaces";
 
+		if (v.includes("../") || v.includes("./"))
+			return "Are you trying to attack me?";
+
 		return true;
 	}),
 	S.brand("Slug"),
@@ -93,7 +96,7 @@ export type Content = typeof Content.Type;
 export const serializeMetadata = (metadata: Metadata): SerializedMetadata => {
 	const timeToRead = Duration.toMinutes(metadata.timeToRead);
 
-	const createdAt = DateTime.toDate(metadata.createdAt);
+	const createdAt = DateTime.toDateUtc(metadata.createdAt);
 
 	return {
 		...metadata,

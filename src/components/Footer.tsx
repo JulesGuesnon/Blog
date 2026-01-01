@@ -18,18 +18,3 @@ export const Footer = () => {
 		</footer>
 	);
 };
-
-console.log(
-	[...document.querySelectorAll("ytd-browse a#video-title")]
-		.flatMap((v) => {
-			const trimmed = v.textContent.trim();
-
-			const [gameTitle, title] = trimmed.split("-");
-
-			if (!gameTitle || !title) return [];
-
-			return `"${title.trim()}","${gameTitle.replace("OST", "").trim()}",,,,,,,,,,,,,,,"${v.href}"`;
-		})
-		.reverse()
-		.join("\n"),
-);

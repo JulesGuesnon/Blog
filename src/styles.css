@@ -139,7 +139,6 @@ h6 {
   }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .marquee .marquee-track {
     animation: none;
