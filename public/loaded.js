@@ -1,7 +1,7 @@
 const initialLoadingEl = document.querySelector('.initial-loading');
 
 
-document.fonts.ready.then(() => {
+const makeContentVisible = () => {
   const styleEl = document.createElement('style')
   styleEl.innerHTML = `
 .initial-loading {
@@ -9,4 +9,16 @@ document.fonts.ready.then(() => {
 }
 `
   document.head.appendChild(styleEl)
+}
+
+const timeoutId = setTimeout(()=> {
+  makeContentVisible()
+}, 1000)
+
+document.fonts.ready.then(() => {
+  clearTimeout(timeoutId)
+
+  makeContentVisible()
 });
+
+
