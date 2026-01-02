@@ -9,6 +9,7 @@ SyntaxHighlighter.registerLanguage("html", tsx);
 SyntaxHighlighter.registerLanguage("js", ts);
 SyntaxHighlighter.registerLanguage("javascript", ts);
 SyntaxHighlighter.registerLanguage("typescript", ts);
+SyntaxHighlighter.registerLanguage("ts", ts);
 
 type Props = {
 	children: ReactElement<{ className?: string; children: string }>;
