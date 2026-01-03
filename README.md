@@ -4,7 +4,7 @@ Yet another blog, yet another tech stack.
 
 Among the objectives behind this blog, I wanted to play with [Tanstack Start](https://tanstack.com/start/latest), and [Effect](https://effect.website/).
 
-Why bother taking 5min to manually created a `tsx` file and import the `mdx` inside, while you can make an overly complex system that has:
+Why bother taking 5min to manually create a `tsx` file and import an `mdx` inside, while you can make an overly complex system that has:
 
 - [A configuration file](https://github.com/JulesGuesnon/Blog/blob/main/config.json)
 - [A JSON schema for your configuration file](https://github.com/JulesGuesnon/Blog/blob/main/config.schema.json) (generated [here](https://github.com/JulesGuesnon/Blog/blob/main/scripts/generate/config-json-schema.ts))
