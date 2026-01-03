@@ -5,6 +5,6 @@
   },
   "source": {
     "type": "fs",
-    "baseFolder": "./src/content"
+    "baseFolder": "./content"
   }
 }
