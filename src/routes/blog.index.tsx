@@ -14,17 +14,20 @@ export const effect = pipe(
 	Effect.andThen((source) => source.all()),
 	Effect.andThen((contents) =>
 		Effect.forEach(contents, (content) =>
-			Processor.getMetadata(content).pipe(
-				Effect.map((metadata) => {
+			Processor.process(content).pipe(
+				Effect.map(({ slug, metadata }) => {
 					return metadata.status === "published"
-						? Content.serializeMetadata(metadata)
+						? { slug, ...Content.serializeMetadata(metadata) }
 						: undefined;
 				}),
 			),
 		),
 	),
 	Effect.map((allMetadata) =>
-		allMetadata.filter((v): v is Content.SerializedMetadata => Boolean(v)),
+		allMetadata.filter(
+			(v): v is Content.SerializedMetadata & { slug: Content.Slug } =>
+				Boolean(v),
+		),
 	),
 );
 
@@ -76,7 +79,7 @@ function RouteComponent() {
 							<Link
 								key={i.toString()}
 								to="/blog/$slug"
-								params={{ slug: "article" }}
+								params={{ slug: entry.slug }}
 								className="grid grid-cols-subgrid col-span-3"
 								overrideClassName="text-zinc-800 dark:text-zinc-100 group"
 							>
@@ -84,7 +87,7 @@ function RouteComponent() {
 									{entry.title}
 								</span>
 								<span className="mt-1 col-span-1 md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
-									{formatter.format(new Date(entry.createdAt))}
+									{formatter.format(entry.createdAt)}
 								</span>
 								<span className="mt-1 col-span-1  md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
 									{entry.timeToRead}min

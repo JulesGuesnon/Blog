@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { DateTime, Effect, pipe, Schema as S } from "effect";
+import * as Duration from "effect/Duration";
 import * as Blog from "@/components/Blog";
 import { Heading } from "@/components/Heading";
 import { Link } from "@/components/Link";
@@ -115,13 +116,30 @@ export const Route = createFileRoute("/blog/$slug")({
 	},
 });
 
+const formatter = new Intl.DateTimeFormat("ja", {
+	month: "short",
+	day: "2-digit",
+});
+
 const Slug = ({ content }: { content: Content.Content }) => {
 	const h1Data = Processor.extractHeadingId(content.metadata.title);
+
+	const formattedCreatedAt = formatter.format(
+		DateTime.toDateUtc(content.metadata.createdAt),
+	);
+	const formattedDuration = Duration.toMinutes(content.metadata.timeToRead);
+
 	return (
 		<>
 			<Heading as="h1" id={h1Data.id}>
 				{h1Data.cleanText}
 			</Heading>
+			<section className="text-zinc-800 dark:text-zinc-100 opacity-60 gap-x-1 flex -mt-4 mb-12">
+				<div>{formattedCreatedAt}</div>
+				<div>-</div>
+				<div>{formattedDuration}min</div>
+			</section>
+			<p className="lead">{content.metadata.description}</p>
 			<Blog.Page
 				mdx={{ default: content.render }}
 				props={{ slug: content.slug }}
