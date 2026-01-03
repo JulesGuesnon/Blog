@@ -13,14 +13,18 @@ export const effect = pipe(
 	Source.getDefault,
 	Effect.andThen((source) => source.all()),
 	Effect.andThen((contents) =>
-		Effect.forEach(
-			contents,
-			(content) =>
-				Processor.process(content).pipe(
-					Effect.map(({ metadata }) => Content.serializeMetadata(metadata)),
-				),
-			{ concurrency: "unbounded" },
+		Effect.forEach(contents, (content) =>
+			Processor.getMetadata(content).pipe(
+				Effect.map((metadata) => {
+					return metadata.status === "published"
+						? Content.serializeMetadata(metadata)
+						: undefined;
+				}),
+			),
 		),
+	),
+	Effect.map((allMetadata) =>
+		allMetadata.filter((v): v is Content.SerializedMetadata => Boolean(v)),
 	),
 );
 
@@ -62,27 +66,33 @@ function RouteComponent() {
 				<h1 className="">Blog</h1>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-[1fr_max-content_max-content] gap-x-4 gap-y-4 mt-12 w-full">
-				{data.data.map((entry, i) => {
-					return (
-						<Link
-							key={i.toString()}
-							to="/blog/$slug"
-							params={{ slug: "article" }}
-							className="grid grid-cols-subgrid col-span-3"
-							overrideClassName="text-zinc-800 dark:text-zinc-100 group"
-						>
-							<span className="col-span-full md:col-span-1 text-lg opacity-80 group-hover:opacity-100 transition-opacity text-ellipsis min-w-0 overflow-hidden whitespace-nowra">
-								{entry.title}
-							</span>
-							<span className="mt-1 col-span-1 md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
-								{formatter.format(new Date(entry.createdAt))}
-							</span>
-							<span className="mt-1 col-span-1  md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
-								{entry.timeToRead}min
-							</span>
-						</Link>
-					);
-				})}
+				{(() => {
+					if (data.data.length === 0) {
+						return <p className="text-zinc-400">Nothing to see here for now</p>;
+					}
+
+					return data.data.map((entry, i) => {
+						return (
+							<Link
+								key={i.toString()}
+								to="/blog/$slug"
+								params={{ slug: "article" }}
+								className="grid grid-cols-subgrid col-span-3"
+								overrideClassName="text-zinc-800 dark:text-zinc-100 group"
+							>
+								<span className="col-span-full md:col-span-1 text-lg opacity-80 group-hover:opacity-100 transition-opacity text-ellipsis min-w-0 overflow-hidden whitespace-nowra">
+									{entry.title}
+								</span>
+								<span className="mt-1 col-span-1 md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
+									{formatter.format(new Date(entry.createdAt))}
+								</span>
+								<span className="mt-1 col-span-1  md:mt-0 text-sm content-center opacity-60 group-hover:opacity-90 transition-opacity">
+									{entry.timeToRead}min
+								</span>
+							</Link>
+						);
+					});
+				})()}
 			</div>
 		</main>
 	);

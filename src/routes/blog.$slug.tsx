@@ -25,6 +25,20 @@ export const effect = (slug: Content.Slug) =>
 				config: Config.serialize(config),
 			} satisfies GetContentOutput;
 		}),
+		Effect.andThen((raw) =>
+			Effect.gen(function* () {
+				const metadata = yield* Processor.getMetadata(raw.rawContent);
+
+				if (metadata.status === "unpublished")
+					return yield* Effect.fail(
+						new Error.TanstackError({
+							e: notFound(),
+						}),
+					);
+
+				return raw;
+			}),
+		),
 		Effect.mapError((e) => {
 			if (e._tag !== "MissingContent") return e;
 

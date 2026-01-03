@@ -10,3 +10,11 @@ export const process = (rawContent: RawContent) => {
 		}
 	}
 };
+
+export const getMetadata = (rawContent: RawContent) => {
+	switch (rawContent.type) {
+		case "mdx": {
+			return Mdx.getMetadata(rawContent);
+		}
+	}
+};

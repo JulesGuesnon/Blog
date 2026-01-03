@@ -67,6 +67,15 @@ export const Metadata = S.Struct({
 	description: S.String,
 	createdAt: CreatedAt,
 	timeToRead: S.Duration,
+	status: S.Union(
+		S.Literal("unpublished"),
+		S.Literal("published"),
+		S.Literal("hidden"),
+	).pipe(
+		S.optionalWith({
+			default: () => "unpublished",
+		}),
+	),
 });
 
 export type Metadata = typeof Metadata.Type;
@@ -81,13 +90,13 @@ export const Content = S.Struct({
 	),
 });
 
-type SerializedMetadata = {
+export type SerializedMetadata = {
 	createdAt: Date;
 	timeToRead: number;
 	title: string;
 };
 
-type SerializedContent = {
+export type SerializedContent = {
 	slug: Slug;
 	metadata: SerializedMetadata;
 };

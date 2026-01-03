@@ -20,3 +20,16 @@ export const process = (rawMdx: Extract<RawContent, { type: Mdx }>) => {
 		),
 	);
 };
+
+export const getMetadata = (rawMdx: Extract<RawContent, { type: Mdx }>) => {
+	return pipe(
+		evaluate(rawMdx.data),
+		Effect.map(
+			(mod) =>
+				({
+					...mod.frontmatter,
+					timeToRead: getTimeToRead(rawMdx.data),
+				}) satisfies Content["metadata"],
+		),
+	);
+};
