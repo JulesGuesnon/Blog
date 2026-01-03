@@ -2,6 +2,7 @@ type Input = {
 	title: string;
 	description: string;
 };
+
 const makeTwitter = ({ title, description }: Input) => [
 	{ name: "twitter:card", content: "summary" },
 	{ name: "twitter:title", content: title },

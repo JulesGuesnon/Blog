@@ -5,8 +5,8 @@ import { NotFound } from "@/components/NotFound";
 import { ScrollTopButton } from "@/components/ScrollTopButton";
 import { ServerError } from "@/components/ServerError";
 import { Shortcuts } from "@/components/Shortcuts";
-import appCss from "../styles.css?url";
 import { Seo } from "@/utils";
+import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
 	head: () => {
