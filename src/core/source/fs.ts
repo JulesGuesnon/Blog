@@ -2,6 +2,7 @@ import { FileSystem } from "@effect/platform";
 import { Data, Effect, Layer } from "effect";
 import type * as Config from "@/core/config";
 import * as Error from "@/core/errors";
+import * as Cache from "@/core/cache";
 import * as RawContent from "@/core/raw-content";
 import { Path } from "@/utils";
 import { Slug } from "../content";
@@ -18,7 +19,8 @@ const scopedReadFile = (
 
 type CommonInput = { baseFolder: string };
 
-const cachedGet = Effect.cachedFunction(
+const cachedGet = Cache.each(
+	"App/Source/Fs/Get",
 	({ baseFolder, slug }: { slug: Slug } & CommonInput) =>
 		Effect.gen(function* () {
 			const fs = yield* FileSystem.FileSystem;
@@ -43,36 +45,38 @@ const cachedGet = Effect.cachedFunction(
 		}),
 );
 
-const cachedAll = Effect.cachedFunction(({ baseFolder }: CommonInput) =>
-	Effect.gen(function* () {
-		const fs = yield* FileSystem.FileSystem;
+const cachedAll = Cache.each(
+	"App/Source/Fs/All",
+	({ baseFolder }: CommonInput) =>
+		Effect.gen(function* () {
+			const fs = yield* FileSystem.FileSystem;
 
-		const allFiles = yield* listFiles(fs, baseFolder).pipe(
-			Effect.mapError((_e) => new Error.MissingContent({ slug: "a" })),
-		);
-
-		const [errors, successes] = yield* Effect.partition(allFiles, (path) =>
-			Effect.gen(function* () {
-				const type = yield* RawContent.typeFromPath(path);
-
-				const data = yield* scopedReadFile(fs, baseFolder, path);
-
-				const slug = Slug.make(Path.basename(path, Path.extname(path)));
-
-				return { type, data, slug };
-			}),
-		);
-
-		if (errors.length > 0) {
-			const errorsStr = errors.map(Error.formatError).join("\n");
-
-			yield* Effect.logError(
-				`[Source][Fs] Multiple errors occured in all:\n${errorsStr}`,
+			const allFiles = yield* listFiles(fs, baseFolder).pipe(
+				Effect.mapError((_e) => new Error.MissingContent({ slug: "a" })),
 			);
-		}
 
-		return successes;
-	}),
+			const [errors, successes] = yield* Effect.partition(allFiles, (path) =>
+				Effect.gen(function* () {
+					const type = yield* RawContent.typeFromPath(path);
+
+					const data = yield* scopedReadFile(fs, baseFolder, path);
+
+					const slug = Slug.make(Path.basename(path, Path.extname(path)));
+
+					return { type, data, slug };
+				}),
+			);
+
+			if (errors.length > 0) {
+				const errorsStr = errors.map(Error.formatError).join("\n");
+
+				yield* Effect.logError(
+					`[Source][Fs] Multiple errors occured in all:\n${errorsStr}`,
+				);
+			}
+
+			return successes;
+		}),
 );
 
 export const makeFsSource = ({ baseFolder }: Config.FsSource) =>
