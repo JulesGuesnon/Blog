@@ -1,4 +1,11 @@
 import { Context, Effect, Layer } from "effect";
+import { Json } from "@/utils";
+
+/*
+ * Overall, the implementation of this cache + caching function are not ideal
+ * but enough for now as an in-memory cache.
+ * Let's consider using Effect's KV the day I need a shared cache
+ */
 
 export class Cache extends Context.Tag("App/Cache")<
 	Cache,
@@ -8,16 +15,14 @@ export class Cache extends Context.Tag("App/Cache")<
 	}
 >() {}
 
-export const make = () =>
+export const make = (map: Map<string, unknown> = new Map()) =>
 	Layer.effect(
 		Cache,
 		Effect.gen(function* () {
-			const storage = yield* Effect.acquireRelease(
-				Effect.succeed(new Map<string, unknown>()),
-				(map) =>
-					Effect.sync(() => {
-						map.clear();
-					}),
+			const storage = yield* Effect.acquireRelease(Effect.succeed(map), (map) =>
+				Effect.sync(() => {
+					map.clear();
+				}),
 			);
 
 			return {
@@ -28,19 +33,6 @@ export const make = () =>
 		}),
 	);
 
-// Sort stringify
-const replaced = (_: string, value: unknown) => {
-	if (!value || typeof value !== "object" || Array.isArray(value)) return value;
-	return (
-		Object.keys(value)
-			.sort()
-			// @ts-expect-error no need to be typed correctly
-			// biome-ignore lint/suspicious/noAssignInExpressions: https://stackoverflow.com/questions/16167581/sort-object-properties-and-json-stringify
-			// biome-ignore lint/complexity/noCommaOperator: same than above
-			.reduce((obj, key) => ((obj[key] = value[key]), obj), {})
-	);
-};
-
 export const each = <A, B, E, R>(
 	key: string,
 	f: (a: A) => Effect.Effect<B, E, R>,
@@ -50,7 +42,7 @@ export const each = <A, B, E, R>(
 
 		return (a: A) =>
 			Effect.gen(function* () {
-				const finalKey = `${key}:${JSON.stringify(a, replaced)}`;
+				const finalKey = `${key}:${Json.sortedStringify(a)}`;
 
 				const cacheValue = yield* cache.get(finalKey);
 
