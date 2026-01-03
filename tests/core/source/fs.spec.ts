@@ -1,6 +1,7 @@
 import { Effect, Exit } from "effect";
 import type { Brand } from "effect/Brand";
 import { Slug } from "@/core/content";
+import * as Runtime from "@/core/runtime";
 import * as Source from "@/core/source";
 import * as Fixture from "../../_fixtures/index.fixture";
 
@@ -18,7 +19,7 @@ describe("Core > Source", () => {
 				files: new Map([[`${BASE_FOLDER}/${slug}.mdx`, content]]),
 			});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				Effect.gen(function* () {
 					const source = yield* Source.Source;
 
@@ -51,7 +52,7 @@ describe("Core > Source", () => {
 
 			const { provide: provideFs, mocks: fsMocks } = Fixture.Fs.make({});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				Effect.gen(function* () {
 					const source = yield* Source.Source;
 
@@ -94,7 +95,7 @@ describe("Core > Source", () => {
 				]),
 			});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				Effect.gen(function* () {
 					const source = yield* Source.Source;
 

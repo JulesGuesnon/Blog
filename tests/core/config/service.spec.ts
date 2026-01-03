@@ -2,6 +2,7 @@ import { Effect, Exit } from "effect";
 import { CONFIG_PATH } from "@/core/config/common";
 import { serialize } from "@/core/config/schema";
 import * as Service from "@/core/config/service";
+import * as Runtime from "@/core/runtime";
 import * as Fixture from "../../_fixtures/index.fixture";
 
 describe("Core > Config > Service", () => {
@@ -15,7 +16,7 @@ describe("Core > Config > Service", () => {
 			]),
 		});
 
-		const exit = await Effect.runPromiseExit(
+		const exit = await Runtime.make().runPromiseExit(
 			Effect.gen(function* () {
 				// Testing cache behaviour
 				yield* Service.Config;
@@ -41,7 +42,7 @@ describe("Core > Config > Service", () => {
 	it("should fail to get the config - file does not exists", async () => {
 		const { provide: provideFs, mocks: fsMocks } = Fixture.Fs.make({});
 
-		const exit = await Effect.runPromiseExit(
+		const exit = await Runtime.make().runPromiseExit(
 			Service.get.pipe(Effect.provide(Service.ConfigLive), provideFs),
 		);
 
@@ -76,7 +77,7 @@ describe("Core > Config > Service", () => {
 			]),
 		});
 
-		const exit = await Effect.runPromiseExit(
+		const exit = await Runtime.make().runPromiseExit(
 			Service.get.pipe(Effect.provide(Service.ConfigLive), provideFs),
 		);
 

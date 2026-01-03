@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import * as Runtime from "@/core/runtime";
 import * as Source from "@/core/source";
 import * as Fixture from "../../_fixtures/index.fixture";
 
@@ -7,7 +7,7 @@ describe("Core > Source", () => {
 		it("should get the source correctly", async () => {
 			const { provide: provideFs } = Fixture.Fs.make();
 
-			const out = Effect.runSync(
+			const out = Runtime.make().runSync(
 				Source.getDefault.pipe(provideFs, Fixture.Config.provide()),
 			);
 

@@ -1,4 +1,5 @@
-import { Effect, Exit } from "effect";
+import { Exit } from "effect";
+import * as Runtime from "@/core/runtime";
 import * as BlogIndex from "@/routes/blog.index";
 import * as Fixture from "../_fixtures/index.fixture";
 
@@ -15,7 +16,7 @@ describe("Routes > Blog.Index", () => {
 				]),
 			});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				BlogIndex.effect.pipe(provideFs, Fixture.Config.provide()),
 			);
 

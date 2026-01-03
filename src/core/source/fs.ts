@@ -1,8 +1,8 @@
 import { FileSystem } from "@effect/platform";
 import { Data, Effect, Layer } from "effect";
+import * as Cache from "@/core/cache";
 import type * as Config from "@/core/config";
 import * as Error from "@/core/errors";
-import * as Cache from "@/core/cache";
 import * as RawContent from "@/core/raw-content";
 import { Path } from "@/utils";
 import { Slug } from "../content";

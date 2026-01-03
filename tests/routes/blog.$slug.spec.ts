@@ -1,9 +1,10 @@
-import { Effect, Exit } from "effect";
+import { notFound } from "@tanstack/react-router";
+import { Exit } from "effect";
 import * as Config from "@/core/config";
 import { Slug } from "@/core/content";
+import * as Runtime from "@/core/runtime";
 import * as BlogSlug from "@/routes/blog.$slug";
 import * as Fixture from "../_fixtures/index.fixture";
-import { notFound } from "@tanstack/react-router";
 
 describe("Routes > Blog.$Slug", () => {
 	describe("effect", () => {
@@ -18,7 +19,7 @@ describe("Routes > Blog.$Slug", () => {
 				]),
 			});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				BlogSlug.effect(slug).pipe(provideFs, Fixture.Config.provide()),
 			);
 
@@ -52,7 +53,7 @@ describe("Routes > Blog.$Slug", () => {
 				]),
 			});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				// @ts-expect-error test purpose
 				BlogSlug.effect(slug).pipe(provideFs),
 			);
@@ -68,7 +69,7 @@ describe("Routes > Blog.$Slug", () => {
 			}
 
 			expect((exit.cause.defect as Error).message).toContain(
-				"Service not found: Config",
+				"Service not found: App/Config",
 			);
 		});
 
@@ -76,7 +77,7 @@ describe("Routes > Blog.$Slug", () => {
 			const slug = Slug.make("my-slug");
 			const { provide: provideFs } = Fixture.Fs.make({});
 
-			const exit = await Effect.runPromiseExit(
+			const exit = await Runtime.make().runPromiseExit(
 				BlogSlug.effect(slug).pipe(provideFs, Fixture.Config.provide()),
 			);
 
