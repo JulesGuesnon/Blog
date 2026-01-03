@@ -64,6 +64,7 @@ export const CreatedAt = S.transformOrFail(S.String, S.DateTimeZonedFromSelf, {
 
 export const Metadata = S.Struct({
 	title: S.String,
+	description: S.String,
 	createdAt: CreatedAt,
 	timeToRead: S.Duration,
 });

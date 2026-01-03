@@ -7,6 +7,7 @@ import * as Content from "@/core/content";
 import * as Processor from "@/core/processor";
 import * as Server from "@/core/server";
 import * as Source from "@/core/source";
+import { Seo } from "@/utils";
 
 export const effect = pipe(
 	Source.getDefault,
@@ -34,6 +35,10 @@ export const Route = createFileRoute("/blog/")({
 			{
 				title: "Blog - Jules Guesnon",
 			},
+			...Seo.make({
+				title: "Blog - Jules Guesnon",
+				description: "View all the articles",
+			}),
 		],
 	}),
 	loader: () => loadData(),

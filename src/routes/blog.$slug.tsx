@@ -1,16 +1,18 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Effect, pipe, Schema as S } from "effect";
+import { DateTime, Effect, pipe, Schema as S } from "effect";
 import * as Blog from "@/components/Blog";
 import { Heading } from "@/components/Heading";
 import { Link } from "@/components/Link";
 import { ServerError } from "@/components/ServerError";
 import { Content, type RawContent, Server } from "@/core";
+
 // Importing from core results into an error
 import * as Config from "@/core/config";
 import * as Error from "@/core/errors";
 import * as Processor from "@/core/processor";
 import * as Source from "@/core/source";
+import { Seo } from "@/utils";
 
 export const effect = (slug: Content.Slug) =>
 	pipe(
@@ -60,12 +62,39 @@ export const Route = createFileRoute("/blog/$slug")({
 
 		const content = await Effect.runPromise(outputToContent(loaderData.data));
 
+		const meta = content.metadata;
+
+		const suffix = " - Jules Guesnon";
+
 		const isNotFound = match.status === "notFound";
 
 		return {
 			meta: [
 				{
-					title: `${isNotFound ? "Not found" : content.metadata.title} - Jules Guesnon`,
+					title: `${isNotFound ? "Not found" : meta.title}${suffix}`,
+				},
+				...Seo.make({
+					title: meta.title + suffix,
+					description: meta.description,
+				}),
+			],
+			scripts: [
+				{
+					type: "application/ld+json",
+					children: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "Article",
+						headline: meta.title + suffix,
+						description: meta.description,
+						image: "",
+						author: {
+							"@type": "Person",
+							name: "Jules Guesnon",
+						},
+						datePublished: meta.createdAt
+							.pipe(DateTime.toDateUtc)
+							.toUTCString(),
+					}),
 				},
 			],
 		};

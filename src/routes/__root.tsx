@@ -6,6 +6,7 @@ import { ScrollTopButton } from "@/components/ScrollTopButton";
 import { ServerError } from "@/components/ServerError";
 import { Shortcuts } from "@/components/Shortcuts";
 import appCss from "../styles.css?url";
+import { Seo } from "@/utils";
 
 export const Route = createRootRoute({
 	head: () => {
@@ -21,6 +22,10 @@ export const Route = createRootRoute({
 				{
 					title: "Jules Guesnon",
 				},
+				...Seo.make({
+					title: "Jules Guesnon",
+					description: "Yet, another website",
+				}),
 			],
 			links: [
 				{

@@ -1,6 +1,7 @@
 import { BunContext } from "@effect/platform-bun";
 import { notFound } from "@tanstack/react-router";
 import { Effect } from "effect";
+import type { Cache } from "./cache";
 import * as Config from "./config/index.ts";
 import * as Error from "./errors";
 import { RuntimeLive } from "./runtime";
@@ -12,7 +13,9 @@ export const provideServerFn = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
 	);
 
 export const runServerFn = async <A>(
-	effect: Effect.Effect<A, Error.Error | Error.TanstackError, never>,
+	effect:
+		| Effect.Effect<A, Error.Error | Error.TanstackError, Cache>
+		| Effect.Effect<A, Error.Error | Error.TanstackError, never>,
 ): Promise<Error.Serialized<A>> => {
 	const outputRes = await effect.pipe(Effect.either, RuntimeLive.runPromise);
 
