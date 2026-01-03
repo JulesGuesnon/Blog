@@ -4,7 +4,7 @@ import { Json } from "@/utils";
 /*
  * Overall, the implementation of this cache + caching function are not ideal
  * but enough for now as an in-memory cache.
- * Let's consider using Effect's KV the day I need a shared cache
+ * Let's consider using Effect's KV the day I need a shared cache (likely never)
  */
 
 export class Cache extends Context.Tag("App/Cache")<
